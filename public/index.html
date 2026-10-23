@@ -1,0 +1,2338 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>知练 · 图片识题练习</title>
+  <style>
+    :root {
+      --paper: #f6f5f0;
+      --card: #ffffff;
+      --ink: #171a16;
+      --muted: #686c63;
+      --line: rgba(23, 26, 22, 0.14);
+      --soft: #eef0e9;
+      --choice: #315fcb;
+      --choice-soft: #e9eefc;
+      --fill: #15705a;
+      --fill-soft: #e4f2ec;
+      --match: #ad4c32;
+      --match-soft: #f8e9e3;
+      --danger: #b23a32;
+      --success: #15705a;
+      --sans: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+      --serif: "Songti SC", "STSong", "SimSun", serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      min-width: 320px;
+    }
+
+    body {
+      min-width: 320px;
+      min-height: 100vh;
+      margin: 0;
+      color: var(--ink);
+      background:
+        linear-gradient(rgba(23, 26, 22, 0.025) 1px, transparent 1px) 0 0 / 100vw 32px,
+        var(--paper);
+      font-family: var(--sans);
+    }
+
+    button,
+    input,
+    textarea {
+      font: inherit;
+    }
+
+    button {
+      color: inherit;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: 0.55;
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    .top,
+    .page {
+      width: min(1240px, calc(100vw - 64px));
+      margin: 0 auto;
+    }
+
+    .top {
+      height: 86px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      font-size: 21px;
+      font-weight: 800;
+    }
+
+    .brand-mark {
+      width: 29px;
+      height: 29px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      color: var(--paper);
+      background: var(--ink);
+      font-family: var(--serif);
+      font-size: 15px;
+    }
+
+    .top-note {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+    }
+
+    .home {
+      min-height: calc(100vh - 86px);
+      padding: 46px 0 60px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .home-head {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 30px;
+      margin-bottom: 26px;
+    }
+
+    .home-head h1 {
+      margin: 0;
+      font-family: var(--serif);
+      font-size: clamp(38px, 4.2vw, 60px);
+      font-weight: 600;
+      line-height: 1.08;
+    }
+
+    .home-head p {
+      margin: 0 0 6px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      white-space: nowrap;
+    }
+
+    .modes {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .mode-card {
+      --accent: var(--choice);
+      --accent-soft: var(--choice-soft);
+      position: relative;
+      min-height: clamp(350px, 40vw, 480px);
+      padding: 22px 24px 20px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      text-align: left;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--card);
+      transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+    }
+
+    .mode-card.fill {
+      --accent: var(--fill);
+      --accent-soft: var(--fill-soft);
+    }
+
+    .mode-card.match {
+      --accent: var(--match);
+      --accent-soft: var(--match-soft);
+    }
+
+    .mode-card::after {
+      position: absolute;
+      right: -45px;
+      bottom: -72px;
+      width: 210px;
+      height: 210px;
+      border-radius: 50%;
+      background: var(--accent-soft);
+      content: "";
+    }
+
+    .mode-card:hover {
+      transform: translateY(-5px);
+      border-color: var(--accent);
+      box-shadow: 0 20px 60px rgba(23, 26, 22, 0.09);
+    }
+
+    .mode-meta {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.13em;
+    }
+
+    .mode-meta strong {
+      color: var(--accent);
+      font-weight: 800;
+    }
+
+    .mode-char {
+      position: relative;
+      z-index: 1;
+      margin: auto 0;
+      color: var(--accent);
+      font-family: var(--serif);
+      font-size: clamp(110px, 14vw, 180px);
+      font-weight: 700;
+      line-height: 0.8;
+    }
+
+    .mode-foot {
+      position: relative;
+      z-index: 1;
+      padding-top: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      border-top: 1px solid var(--accent);
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .round-arrow {
+      width: 36px;
+      height: 36px;
+      flex: 0 0 auto;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(23, 26, 22, 0.22);
+      border-radius: 50%;
+      font-size: 18px;
+      font-weight: 400;
+    }
+
+    .mode-card:hover .round-arrow {
+      color: #ffffff;
+      border-color: var(--accent);
+      background: var(--accent);
+    }
+
+    .start {
+      min-height: calc(100vh - 86px);
+      padding: 25px 0 55px;
+    }
+
+    .back-button {
+      min-height: 42px;
+      padding: 0;
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      border: 0;
+      background: transparent;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .back-icon {
+      width: 30px;
+      height: 30px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 50%;
+      color: var(--ink);
+      background: var(--card);
+      font-size: 16px;
+    }
+
+    .start-grid {
+      min-height: calc(100vh - 172px);
+      display: grid;
+      grid-template-columns: minmax(0, 1.03fr) minmax(360px, 0.97fr);
+      align-items: center;
+      gap: clamp(38px, 7vw, 96px);
+    }
+
+    .intro {
+      --accent: var(--choice);
+      --accent-soft: var(--choice-soft);
+    }
+
+    .intro.fill {
+      --accent: var(--fill);
+      --accent-soft: var(--fill-soft);
+    }
+
+    .title-line {
+      display: flex;
+      align-items: flex-end;
+      gap: 24px;
+    }
+
+    .title-char {
+      color: var(--accent);
+      font-family: var(--serif);
+      font-size: clamp(110px, 14vw, 180px);
+      font-weight: 700;
+      line-height: 0.78;
+    }
+
+    .title-copy small {
+      display: block;
+      margin-bottom: 7px;
+      color: var(--accent);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.18em;
+    }
+
+    .title-copy h1 {
+      margin: 0;
+      font-family: var(--serif);
+      font-size: clamp(38px, 4.2vw, 60px);
+      font-weight: 600;
+      line-height: 1;
+    }
+
+    .facts {
+      margin: 38px 0 28px;
+      display: flex;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .fact {
+      flex: 1;
+      padding: 15px 20px 15px 0;
+    }
+
+    .fact + .fact {
+      padding-left: 20px;
+      border-left: 1px solid var(--line);
+    }
+
+    .fact strong {
+      display: block;
+      font-size: 20px;
+    }
+
+    .fact span {
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    .primary-button,
+    .secondary-button {
+      min-height: 47px;
+      padding: 0 19px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .primary-button {
+      border: 1px solid var(--accent, var(--choice));
+      color: #ffffff;
+      background: var(--accent, var(--choice));
+    }
+
+    .secondary-button {
+      border: 1px solid var(--line);
+      background: var(--card);
+    }
+
+    .secondary-button:hover:not(:disabled) {
+      border-color: var(--ink);
+    }
+
+    .start-button {
+      width: min(315px, 100%);
+      min-height: 61px;
+      padding: 0 18px 0 23px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      border: 0;
+      border-radius: 6px;
+      color: #ffffff;
+      background: var(--accent);
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+    .start-button .round-arrow {
+      border-color: transparent;
+      background: rgba(255, 255, 255, 0.16);
+    }
+
+    .source-card {
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--card);
+      box-shadow: 0 20px 60px rgba(23, 26, 22, 0.07);
+    }
+
+    .source-head {
+      min-height: 56px;
+      padding: 12px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      border-bottom: 1px solid var(--line);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .source-head span:last-child {
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    .source-body {
+      padding: 18px;
+      display: grid;
+      gap: 16px;
+    }
+
+    .upload-zone {
+      position: relative;
+      min-height: 202px;
+      padding: 22px;
+      display: grid;
+      place-items: center;
+      border: 1px dashed rgba(23, 26, 22, 0.27);
+      border-radius: 6px;
+      background:
+        linear-gradient(rgba(23, 26, 22, 0.03) 1px, transparent 1px) 0 0 / 100% 28px,
+        linear-gradient(90deg, rgba(23, 26, 22, 0.03) 1px, transparent 1px) 0 0 / 28px 100%,
+        #fafaf7;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    .upload-zone:hover,
+    .upload-zone.is-dragging {
+      border-color: var(--accent);
+      background-color: var(--accent-soft);
+    }
+
+    .upload-zone.has-file {
+      min-height: 250px;
+      padding: 12px;
+    }
+
+    .upload-placeholder {
+      display: grid;
+      justify-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.6;
+    }
+
+    .upload-placeholder strong {
+      color: var(--ink);
+      font-size: 14px;
+    }
+
+    .picture-icon {
+      position: relative;
+      width: 48px;
+      height: 38px;
+      margin-bottom: 4px;
+      border: 1.5px solid currentColor;
+      border-radius: 4px;
+    }
+
+    .picture-icon::before {
+      position: absolute;
+      top: 7px;
+      right: 8px;
+      width: 7px;
+      height: 7px;
+      border: 1.5px solid currentColor;
+      border-radius: 50%;
+      content: "";
+    }
+
+    .picture-icon::after {
+      position: absolute;
+      right: 7px;
+      bottom: 7px;
+      left: 7px;
+      height: 15px;
+      border-top: 1.5px solid currentColor;
+      border-left: 1.5px solid currentColor;
+      transform: skewY(-22deg);
+      content: "";
+    }
+
+    .image-preview {
+      width: 100%;
+      max-height: 300px;
+      object-fit: contain;
+      border-radius: 4px;
+    }
+
+    .file-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    .file-meta strong {
+      max-width: 72%;
+      overflow: hidden;
+      color: var(--ink);
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .upload-actions {
+      display: flex;
+      gap: 9px;
+      flex-wrap: wrap;
+    }
+
+    .upload-actions button {
+      min-height: 40px;
+      font-size: 12px;
+    }
+
+    .ocr-status {
+      min-height: 18px;
+      margin: -4px 0 0;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.6;
+    }
+
+    .ocr-status.success {
+      color: var(--success);
+    }
+
+    .ocr-status.error {
+      color: var(--danger);
+    }
+
+    .text-field {
+      display: grid;
+      gap: 8px;
+    }
+
+    .text-field label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .text-field label span {
+      color: var(--muted);
+      font-size: 9px;
+      font-weight: 700;
+    }
+
+    .text-field textarea {
+      width: 100%;
+      min-height: 176px;
+      padding: 14px 15px;
+      resize: vertical;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      outline: none;
+      color: var(--ink);
+      background: #fcfcf9;
+      font-size: 13px;
+      line-height: 1.85;
+    }
+
+    .text-field textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-soft);
+    }
+
+    .quiz {
+      --accent: var(--choice);
+      --accent-soft: var(--choice-soft);
+      min-height: calc(100vh - 86px);
+      padding: 25px 0 52px;
+    }
+
+    .quiz.fill {
+      --accent: var(--fill);
+      --accent-soft: var(--fill-soft);
+    }
+
+    .toolbar {
+      margin-bottom: 23px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .mode-pill {
+      padding: 7px 11px;
+      border-radius: 99px;
+      color: var(--accent);
+      background: var(--soft);
+      font-size: 10px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .progress-wrap {
+      max-width: 470px;
+      margin-left: auto;
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .progress-track {
+      height: 4px;
+      flex: 1;
+      overflow: hidden;
+      border-radius: 2px;
+      background: rgba(23, 26, 22, 0.1);
+    }
+
+    .progress-bar {
+      display: block;
+      width: 0;
+      height: 100%;
+      border-radius: inherit;
+      background: var(--accent);
+      transition: width 180ms ease;
+    }
+
+    .progress-text {
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .quiz-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(300px, 0.65fr);
+      align-items: start;
+      gap: 18px;
+    }
+
+    .question-list {
+      display: grid;
+      gap: 14px;
+    }
+
+    .question-card {
+      padding: clamp(22px, 3.6vw, 40px);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--card);
+    }
+
+    .question-card.is-correct {
+      border-color: rgba(21, 112, 90, 0.42);
+    }
+
+    .question-card.is-wrong {
+      border-color: rgba(178, 58, 50, 0.42);
+    }
+
+    .question-label {
+      margin: 0 0 17px;
+      color: var(--accent);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+    }
+
+    .question-title {
+      margin: 0;
+      font-family: var(--serif);
+      font-size: clamp(22px, 2.6vw, 31px);
+      font-weight: 600;
+      line-height: 1.52;
+      overflow-wrap: anywhere;
+    }
+
+    .blank-line {
+      display: inline-block;
+      min-width: 54px;
+      height: 1em;
+      margin: 0 4px;
+      vertical-align: -0.08em;
+      border-bottom: 2px solid var(--accent);
+    }
+
+    .options {
+      margin-top: 23px;
+      display: grid;
+      gap: 9px;
+    }
+
+    .option {
+      position: relative;
+      min-height: 50px;
+      padding: 12px 14px;
+      display: flex;
+      align-items: flex-start;
+      gap: 11px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #fcfcf9;
+      cursor: pointer;
+    }
+
+    .option:hover {
+      border-color: var(--accent);
+    }
+
+    .option.is-correct {
+      border-color: rgba(21, 112, 90, 0.55);
+      background: #edf8f3;
+    }
+
+    .option.is-wrong {
+      border-color: rgba(178, 58, 50, 0.55);
+      background: #fff0ee;
+    }
+
+    .option input {
+      width: 17px;
+      height: 17px;
+      margin: 2px 0 0;
+      flex: 0 0 auto;
+      accent-color: var(--accent);
+    }
+
+    .option-index {
+      min-width: 20px;
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 800;
+      line-height: 1.55;
+    }
+
+    .option-text {
+      flex: 1;
+      font-size: 14px;
+      line-height: 1.55;
+      overflow-wrap: anywhere;
+    }
+
+    .question-feedback {
+      margin-top: 18px;
+      padding: 14px 15px;
+      border-radius: 6px;
+      background: #f7f7f3;
+      font-size: 12px;
+      line-height: 1.75;
+    }
+
+    .question-feedback.is-correct {
+      color: var(--success);
+      background: #edf8f3;
+    }
+
+    .question-feedback.is-wrong {
+      color: var(--danger);
+      background: #fff0ee;
+    }
+
+    .feedback-source {
+      margin: 8px 0 0;
+      padding-top: 8px;
+      border-top: 1px solid currentColor;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .quiz-side {
+      position: sticky;
+      top: 18px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .side-card {
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--card);
+    }
+
+    .side-head {
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      border-bottom: 1px solid var(--line);
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .side-head span:last-child {
+      color: var(--muted);
+      font-size: 9px;
+    }
+
+    .source-text {
+      max-height: 420px;
+      margin: 0;
+      padding: 16px;
+      overflow: auto;
+      color: #5f645b;
+      font-size: 12px;
+      line-height: 1.9;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    .score-card {
+      padding: 20px;
+      display: grid;
+      gap: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--card);
+    }
+
+    .score-number {
+      display: flex;
+      align-items: baseline;
+      gap: 7px;
+      color: var(--accent);
+    }
+
+    .score-number strong {
+      font-family: var(--serif);
+      font-size: 44px;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .score-number span {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .score-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.7;
+    }
+
+    .score-card .primary-button {
+      width: 100%;
+    }
+
+    .submit-area {
+      margin-top: 18px;
+      padding: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--card);
+    }
+
+    .submit-copy strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 13px;
+    }
+
+    .submit-copy span {
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    .submit-area .primary-button {
+      min-width: 130px;
+      flex: 0 0 auto;
+    }
+
+    .toast {
+      position: fixed;
+      z-index: 20;
+      right: 22px;
+      bottom: 22px;
+      max-width: min(390px, calc(100vw - 36px));
+      padding: 13px 16px;
+      border-radius: 6px;
+      color: #ffffff;
+      background: #252923;
+      box-shadow: 0 16px 45px rgba(23, 26, 22, 0.2);
+      font-size: 12px;
+      line-height: 1.6;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(10px);
+      transition: opacity 160ms ease, transform 160ms ease;
+    }
+
+    .toast.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .toast.is-error {
+      background: #8e312c;
+    }
+
+    .toast.is-success {
+      background: #12614f;
+    }
+
+    @media (max-width: 900px) {
+      .top,
+      .page {
+        width: calc(100vw - 40px);
+      }
+
+      .start-grid {
+        min-height: 0;
+        padding: 18px 0 47px;
+        grid-template-columns: 1fr;
+        gap: 26px;
+      }
+
+      .quiz-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .quiz-side {
+        position: static;
+        order: -1;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .top {
+        height: 72px;
+      }
+
+      .brand {
+        font-size: 18px;
+      }
+
+      .top-note {
+        display: none;
+      }
+
+      .home {
+        padding: 32px 0 46px;
+      }
+
+      .home-head {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .home-head h1 {
+        font-size: 38px;
+      }
+
+      .modes {
+        grid-template-columns: 1fr;
+      }
+
+      .mode-card {
+        min-height: 208px;
+        padding: 16px 18px;
+        display: grid;
+        grid-template-columns: 1fr auto;
+        grid-template-rows: auto 1fr auto;
+      }
+
+      .mode-meta {
+        grid-column: 1 / -1;
+      }
+
+      .mode-char {
+        margin: 12px 0 0;
+        font-size: 100px;
+      }
+
+      .mode-foot {
+        min-width: 115px;
+        align-self: end;
+        padding: 0 0 3px;
+        border: 0;
+        display: grid;
+        justify-items: end;
+        gap: 9px;
+      }
+
+      .title-char {
+        font-size: 99px;
+      }
+
+      .title-copy h1 {
+        font-size: 37px;
+      }
+
+      .facts {
+        margin-top: 27px;
+      }
+
+      .fact {
+        padding-right: 12px;
+      }
+
+      .fact + .fact {
+        padding-left: 12px;
+      }
+
+      .fact strong {
+        font-size: 16px;
+      }
+
+      .start-button {
+        width: 100%;
+      }
+
+      .toolbar {
+        flex-wrap: wrap;
+      }
+
+      .progress-wrap {
+        order: 3;
+        flex-basis: 100%;
+        max-width: none;
+        margin-left: 0;
+      }
+
+      .question-card {
+        padding: 20px;
+      }
+
+      .submit-area {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .submit-area .primary-button {
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .top,
+      .page {
+        width: calc(100vw - 28px);
+      }
+
+      .home-head h1 {
+        font-size: 34px;
+      }
+
+      .title-line {
+        gap: 15px;
+      }
+
+      .title-char {
+        font-size: 81px;
+      }
+
+      .title-copy h1 {
+        font-size: 31px;
+      }
+
+      .upload-actions {
+        display: grid;
+      }
+
+      .upload-actions button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main id="app"></main>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const app = document.getElementById("app");
+      const toastElement = document.getElementById("toast");
+
+      if (!app || !toastElement) {
+        return;
+      }
+
+      const MODES = {
+        choice: {
+          char: "选",
+          name: "选择题",
+          number: "01",
+          tag: "选择题我选选选"
+        },
+        fill: {
+          char: "填",
+          name: "填空题",
+          number: "02",
+          tag: "填空题我填填填"
+        },
+        match: {
+          char: "配",
+          name: "配对题",
+          number: "03",
+          tag: "配对题我配配配"
+        }
+      };
+
+      const state = {
+        screen: "home",
+        mode: "choice",
+        selectedFile: null,
+        previewUrl: "",
+        sourceText: "",
+        questions: [],
+        answers: [],
+        submitted: false,
+        loadingOcr: false,
+        loadingQuestions: false
+      };
+
+      let toastTimer = 0;
+
+      const HTML_ENTITIES = {
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+      };
+
+      function escapeHtml(value) {
+        return String(value ?? "").replace(/[&<>"']/g, (character) => {
+          return HTML_ENTITIES[character];
+        });
+      }
+
+      function getErrorMessage(error) {
+        return error instanceof Error ? error.message : String(error);
+      }
+
+      function normalizeOption(option) {
+        if (typeof option === "string" || typeof option === "number") {
+          return String(option).trim();
+        }
+
+        if (option && typeof option === "object") {
+          return String(
+            option.text ??
+            option.label ??
+            option.value ??
+            option.content ??
+            ""
+          ).trim();
+        }
+
+        return "";
+      }
+
+      function normalizeOptions(options) {
+        if (!Array.isArray(options)) {
+          return [];
+        }
+
+        return options.map(normalizeOption).filter(Boolean);
+      }
+
+      function showToast(message, type = "info") {
+        window.clearTimeout(toastTimer);
+        toastElement.textContent = message;
+        toastElement.className = "toast is-visible";
+
+        if (type === "error") {
+          toastElement.classList.add("is-error");
+        }
+
+        if (type === "success") {
+          toastElement.classList.add("is-success");
+        }
+
+        toastTimer = window.setTimeout(() => {
+          toastElement.className = "toast";
+        }, 3800);
+      }
+
+      function setSelectedFile(file) {
+        if (!file) {
+          return;
+        }
+
+        const isImage = file.type
+          ? file.type.startsWith("image/")
+          : /\.(png|jpe?g|webp|bmp)$/i.test(file.name);
+
+        if (!isImage) {
+          showToast("请选择 JPG、PNG、WEBP 或 BMP 图片。", "error");
+          return;
+        }
+
+        if (state.previewUrl) {
+          URL.revokeObjectURL(state.previewUrl);
+        }
+
+        state.selectedFile = file;
+        state.previewUrl = URL.createObjectURL(file);
+        updateFilePreview();
+      }
+
+      function formatFileSize(bytes) {
+        if (!Number.isFinite(bytes) || bytes <= 0) {
+          return "未知大小";
+        }
+
+        if (bytes < 1024 * 1024) {
+          return Math.max(1, Math.round(bytes / 1024)) + " KB";
+        }
+
+        return (bytes / 1024 / 1024).toFixed(1) + " MB";
+      }
+
+      function updateFilePreview() {
+        const zone = document.querySelector(".upload-zone");
+        const preview = document.getElementById("image-preview");
+        const placeholder = document.getElementById("upload-placeholder");
+        const fileMeta = document.getElementById("file-meta");
+        const fileName = document.getElementById("file-name");
+        const fileSize = document.getElementById("file-size");
+
+        if (!zone || !preview || !placeholder || !fileMeta || !fileName || !fileSize) {
+          return;
+        }
+
+        if (!state.selectedFile) {
+          zone.classList.remove("has-file");
+          preview.hidden = true;
+          preview.removeAttribute("src");
+          placeholder.hidden = false;
+          fileMeta.hidden = true;
+          return;
+        }
+
+        preview.src = state.previewUrl;
+        preview.hidden = false;
+        placeholder.hidden = true;
+        fileMeta.hidden = false;
+        fileName.textContent = state.selectedFile.name;
+        fileSize.textContent = formatFileSize(state.selectedFile.size);
+        zone.classList.add("has-file");
+      }
+
+      function extractOcrText(payload) {
+        const directCandidates = [
+          payload?.text,
+          payload?.data?.text,
+          payload?.result?.text,
+          payload?.data?.data?.text
+        ];
+
+        for (const candidate of directCandidates) {
+          if (typeof candidate === "string" && candidate.trim()) {
+            return candidate.trim();
+          }
+        }
+
+        function collectWords(value, depth, seen) {
+          if (!value || typeof value !== "object" || depth > 8 || seen.has(value)) {
+            return "";
+          }
+
+          seen.add(value);
+
+          if (Array.isArray(value.words_result)) {
+            const words = value.words_result
+              .map((item) => {
+                if (typeof item === "string") {
+                  return item.trim();
+                }
+
+                return String(item?.words ?? item?.text ?? "").trim();
+              })
+              .filter(Boolean)
+              .join("\n");
+
+            if (words) {
+              return words;
+            }
+          }
+
+          const keys = ["data", "result", "ocr", "response", "payload"];
+
+          for (const key of keys) {
+            const text = collectWords(value[key], depth + 1, seen);
+
+            if (text) {
+              return text;
+            }
+          }
+
+          return "";
+        }
+
+        return collectWords(payload, 0, new Set());
+      }
+
+      function extractQuestions(payload) {
+        const candidates = [
+          payload?.questions,
+          payload?.data?.questions,
+          payload?.result?.questions,
+          payload?.data,
+          payload?.result,
+          payload
+        ];
+
+        for (const candidate of candidates) {
+          if (Array.isArray(candidate)) {
+            return candidate;
+          }
+        }
+
+        return [];
+      }
+
+      function normalizeQuestion(raw, mode) {
+        if (!raw || typeof raw !== "object") {
+          return null;
+        }
+
+        const options = normalizeOptions(raw.options);
+
+        if (mode === "choice") {
+          const question = String(
+            raw.stem ??
+            raw.question ??
+            raw.title ??
+            raw.text ??
+            ""
+          ).trim();
+
+          if (!question || options.length < 2) {
+            return null;
+          }
+
+          const rawIndex = raw.answerIndex ?? raw.correctIndex ?? raw.correctOptionIndex;
+          let answerIndex = rawIndex === undefined || rawIndex === null || rawIndex === ""
+            ? -1
+            : Number(rawIndex);
+
+          if (!Number.isInteger(answerIndex) || answerIndex < 0) {
+            const answerText = String(
+              raw.answer ??
+              raw.correctAnswer ??
+              ""
+            ).trim();
+
+            answerIndex = options.indexOf(answerText);
+
+            if (answerIndex < 0 && /^[A-D]$/i.test(answerText)) {
+              answerIndex = answerText.toUpperCase().charCodeAt(0) - 65;
+            }
+          }
+
+          if (!Number.isInteger(answerIndex) || answerIndex < 0 || answerIndex >= options.length) {
+            return null;
+          }
+
+          return {
+            kind: "choice",
+            question,
+            options,
+            answerIndex,
+            sourceQuote: String(
+              raw.sourceQuote ??
+              raw.source ??
+              raw.originalText ??
+              ""
+            ).trim()
+          };
+        }
+
+        const question = String(
+          raw.question ??
+          raw.stem ??
+          raw.title ??
+          raw.text ??
+          ""
+        ).trim();
+
+        if (!question || options.length < 2) {
+          return null;
+        }
+
+        let answer = String(
+          raw.answer ??
+          raw.correctAnswer ??
+          raw.correct ??
+          raw.answers?.[0] ??
+          ""
+        ).trim();
+
+        if (!answer || !options.includes(answer)) {
+          const rawIndex = raw.answerIndex ?? raw.correctIndex;
+          const answerIndex = rawIndex === undefined || rawIndex === null || rawIndex === ""
+            ? -1
+            : Number(rawIndex);
+
+          if (Number.isInteger(answerIndex) && answerIndex >= 0 && answerIndex < options.length) {
+            answer = options[answerIndex];
+          }
+        }
+
+        if (!answer || !options.includes(answer)) {
+          return null;
+        }
+
+        return {
+          kind: "fill",
+          question,
+          options,
+          answer,
+          sourceQuote: String(
+            raw.sourceQuote ??
+            raw.source ??
+            raw.originalText ??
+            ""
+          ).trim()
+        };
+      }
+
+      function normalizeQuestions(payload, mode) {
+        return extractQuestions(payload)
+          .map((question) => normalizeQuestion(question, mode))
+          .filter(Boolean);
+      }
+
+      async function fetchJson(url, options = {}) {
+        let response;
+
+        try {
+          response = await fetch(url, options);
+        } catch (error) {
+          throw new Error("无法连接后端服务：" + getErrorMessage(error));
+        }
+
+        const rawText = await response.text();
+        let payload = {};
+
+        if (rawText) {
+          try {
+            payload = JSON.parse(rawText);
+          } catch {
+            payload = { error: rawText };
+          }
+        }
+
+        if (!response.ok) {
+          throw new Error(
+            payload?.error ||
+            payload?.message ||
+            "请求失败（HTTP " + response.status + "）"
+          );
+        }
+
+        return payload;
+      }
+
+      function topBar() {
+        return `
+          <header class="top">
+            <button class="brand" type="button" data-action="home" aria-label="返回首页">
+              <span class="brand-mark">知</span>
+              <span>知练</span>
+            </button>
+            <span class="top-note">图片识别 · AI 出题</span>
+          </header>
+        `;
+      }
+
+      function renderHome() {
+        const cards = Object.entries(MODES).map(([mode, item]) => {
+          return `
+            <button
+              class="mode-card ${mode}"
+              type="button"
+              data-action="select-mode"
+              data-mode="${mode}"
+            >
+              <span class="mode-meta">
+                <span>${item.number}</span>
+                <strong>${item.name}</strong>
+              </span>
+
+              <span class="mode-char">${item.char}</span>
+
+              <span class="mode-foot">
+                <span>${item.tag}</span>
+                <span class="round-arrow" aria-hidden="true">→</span>
+              </span>
+            </button>
+          `;
+        }).join("");
+
+        app.innerHTML = `
+          ${topBar()}
+          <div class="page home">
+            <div class="home-head">
+              <h1>选择一种练习</h1>
+              <p>01 / 03</p>
+            </div>
+            <div class="modes">${cards}</div>
+          </div>
+        `;
+      }
+
+      function renderStart() {
+        const mode = MODES[state.mode];
+        const hasFile = Boolean(state.selectedFile);
+
+        app.innerHTML = `
+          ${topBar()}
+          <div class="page start">
+            <button class="back-button" type="button" data-action="home">
+              <span class="back-icon" aria-hidden="true">←</span>
+              <span>返回</span>
+            </button>
+
+            <div class="start-grid">
+              <section class="intro ${state.mode}">
+                <div class="title-line">
+                  <span class="title-char">${mode.char}</span>
+
+                  <div class="title-copy">
+                    <small>MODE ${mode.number}</small>
+                    <h1>${mode.name}</h1>
+                  </div>
+                </div>
+
+                <div class="facts">
+                  <div class="fact">
+                    <strong>10</strong>
+                    <span>目标题量</span>
+                  </div>
+
+                  <div class="fact">
+                    <strong>${mode.tag}</strong>
+                    <span>作答方式</span>
+                  </div>
+
+                  <div class="fact">
+                    <strong>原文</strong>
+                    <span>答案依据</span>
+                  </div>
+                </div>
+
+                <button class="start-button" type="button" data-action="generate">
+                  <span>开始答题</span>
+                  <span class="round-arrow" aria-hidden="true">→</span>
+                </button>
+              </section>
+
+              <aside class="source-card">
+                <div class="source-head">
+                  <span>原文与图片</span>
+                  <span>OCR / 手动输入</span>
+                </div>
+
+                <div class="source-body">
+                  <label class="upload-zone${hasFile ? " has-file" : ""}" for="image-input">
+                    <input
+                      class="sr-only"
+                      id="image-input"
+                      type="file"
+                      accept="image/png,image/jpeg,image/webp,image/bmp"
+                    >
+
+                    <span
+                      class="upload-placeholder"
+                      id="upload-placeholder"
+                      ${hasFile ? "hidden" : ""}
+                    >
+                      <span class="picture-icon" aria-hidden="true"></span>
+                      <strong>上传文字图片</strong>
+                      <span>点击选择，或将图片拖到这里</span>
+                      <span>支持 JPG、PNG、WEBP、BMP</span>
+                    </span>
+
+                    <img
+                      class="image-preview"
+                      id="image-preview"
+                      alt="待识别的原图"
+                      ${hasFile ? `src="${escapeHtml(state.previewUrl)}"` : "hidden"}
+                    >
+                  </label>
+
+                  <div class="file-meta" id="file-meta" ${hasFile ? "" : "hidden"}>
+                    <strong id="file-name">
+                      ${hasFile ? escapeHtml(state.selectedFile.name) : ""}
+                    </strong>
+                    <span id="file-size">
+                      ${hasFile ? formatFileSize(state.selectedFile.size) : ""}
+                    </span>
+                  </div>
+
+                  <div class="upload-actions">
+                    <button class="secondary-button" type="button" data-action="pick-file">
+                      选择图片
+                    </button>
+
+                    <button
+                      class="secondary-button"
+                      type="button"
+                      data-action="recognize"
+                      ${state.loadingOcr ? "disabled" : ""}
+                    >
+                      ${state.loadingOcr ? "识别中..." : "识别图片文字"}
+                    </button>
+                  </div>
+
+                  <p class="ocr-status" id="ocr-status">
+                    ${state.selectedFile
+                      ? "图片已选择，识别结果会填入下方文本框。"
+                      : "请选择图片，或直接在下方输入原文。"}
+                  </p>
+
+                  <div class="text-field">
+                    <label for="source-text">
+                      <span>原文文本</span>
+                      <span>可手动校对和修改</span>
+                    </label>
+
+                    <textarea
+                      id="source-text"
+                      placeholder="在这里输入或粘贴原文，也可以先用上方图片识别文字。"
+                    >${escapeHtml(state.sourceText)}</textarea>
+                  </div>
+                </div>
+              </aside>
+            </div>
+          </div>
+        `;
+      }
+
+      function getSelectedIndex(questionIndex) {
+        const value = state.answers[questionIndex];
+        return Number.isInteger(value) ? value : null;
+      }
+
+      function getCorrectIndex(question) {
+        if (question.kind === "choice") {
+          return question.answerIndex;
+        }
+
+        return question.options.indexOf(question.answer);
+      }
+
+      function isQuestionCorrect(question, questionIndex) {
+        const selectedIndex = getSelectedIndex(questionIndex);
+        return selectedIndex !== null && selectedIndex === getCorrectIndex(question);
+      }
+
+      function renderQuestionOptions(question, questionIndex) {
+        const selectedIndex = getSelectedIndex(questionIndex);
+        const correctIndex = getCorrectIndex(question);
+
+        return question.options.map((option, optionIndex) => {
+          let statusClass = "";
+
+          if (state.submitted) {
+            if (optionIndex === correctIndex) {
+              statusClass = " is-correct";
+            } else if (optionIndex === selectedIndex) {
+              statusClass = " is-wrong";
+            }
+          }
+
+          return `
+            <label class="option${statusClass}">
+              <input
+                type="radio"
+                name="question-${questionIndex}"
+                value="${optionIndex}"
+                data-question-index="${questionIndex}"
+                data-option-index="${optionIndex}"
+                ${selectedIndex === optionIndex ? "checked" : ""}
+                ${state.submitted ? "disabled" : ""}
+              >
+              <span class="option-index">
+                ${String.fromCharCode(65 + optionIndex)}
+              </span>
+              <span class="option-text">${escapeHtml(option)}</span>
+            </label>
+          `;
+        }).join("");
+      }
+
+      function formatQuestionText(text) {
+        return escapeHtml(text).replace(
+          /(_{3,}|＿{2,})/g,
+          '<span class="blank-line" aria-label="空格"></span>'
+        );
+      }
+
+      function findSourceQuote(question) {
+        if (question.sourceQuote) {
+          return question.sourceQuote;
+        }
+
+        const original = state.sourceText.trim();
+
+        if (!original) {
+          return "原文内容暂不可用。";
+        }
+
+        const keywords = [];
+
+        if (question.kind === "fill" && question.answer) {
+          keywords.push(question.answer);
+        }
+
+        const parts = question.question
+          .split(/_{3,}|＿{2,}/)
+          .map((part) => part.trim())
+          .filter((part) => part.length >= 3)
+          .sort((first, second) => second.length - first.length);
+
+        keywords.push(...parts.slice(0, 2));
+
+        const sentences = original.match(/[^。！？!?\n]+[。！？!?]?/g) || [original];
+        const sentence = sentences.find((item) => {
+          return keywords.some((keyword) => item.includes(keyword));
+        });
+
+        return (sentence || original).trim().slice(0, 220);
+      }
+
+      function renderFeedback(question, questionIndex) {
+        if (!state.submitted) {
+          return "";
+        }
+
+        const correct = isQuestionCorrect(question, questionIndex);
+        const selectedIndex = getSelectedIndex(questionIndex);
+        const userAnswer = selectedIndex === null
+          ? "未作答"
+          : question.options[selectedIndex];
+
+        const correctAnswer = question.options[getCorrectIndex(question)];
+
+        return `
+          <div class="question-feedback ${correct ? "is-correct" : "is-wrong"}">
+            ${correct
+              ? `<strong>回答正确。</strong> 正确答案：${escapeHtml(correctAnswer)}`
+              : `<strong>回答错误。</strong>
+                 你的答案：${escapeHtml(userAnswer)}；
+                 正确答案：${escapeHtml(correctAnswer)}`}
+
+            ${correct
+              ? ""
+              : `<p class="feedback-source">
+                   原文：${escapeHtml(findSourceQuote(question))}
+                 </p>`}
+          </div>
+        `;
+      }
+
+      function renderQuestionCard(question, questionIndex) {
+        const statusClass = state.submitted
+          ? (isQuestionCorrect(question, questionIndex)
+              ? " is-correct"
+              : " is-wrong")
+          : "";
+
+        const questionText = question.kind === "fill"
+          ? formatQuestionText(question.question)
+          : escapeHtml(question.question);
+
+        return `
+          <article class="question-card${statusClass}">
+            <p class="question-label">
+              ${MODES[state.mode].name} · ${String(questionIndex + 1).padStart(2, "0")}
+            </p>
+
+            <h2 class="question-title">${questionText}</h2>
+
+            <div class="options">
+              ${renderQuestionOptions(question, questionIndex)}
+            </div>
+
+            ${renderFeedback(question, questionIndex)}
+          </article>
+        `;
+      }
+
+      function countAnswered() {
+        return state.answers.filter((value) => Number.isInteger(value)).length;
+      }
+
+      function renderResults() {
+        const total = state.questions.length;
+
+        const correct = state.questions.filter((question, index) => {
+          return isQuestionCorrect(question, index);
+        }).length;
+
+        const wrong = Math.max(0, total - correct);
+
+        return `
+          <div class="score-card">
+            <div class="score-number">
+              <strong>${correct}</strong>
+              <span>/ ${total} 题正确</span>
+            </div>
+
+            <p>
+              ${wrong > 0
+                ? `本轮有 ${wrong} 道错题，下方已标出正确答案和原文依据。`
+                : "本轮全部答对。"}
+            </p>
+
+            <button class="primary-button" type="button" data-action="restart">
+              再练一组
+            </button>
+          </div>
+        `;
+      }
+
+      function renderQuiz() {
+        const totalCount = state.questions.length;
+        const answeredCount = countAnswered();
+
+        const progressPercent = totalCount > 0
+          ? Math.round((answeredCount / totalCount) * 100)
+          : 0;
+
+        app.innerHTML = `
+          ${topBar()}
+          <div class="page quiz ${state.mode}">
+            <div class="toolbar">
+              <button class="back-button" type="button" data-action="exit-quiz">
+                <span class="back-icon" aria-hidden="true">←</span>
+                <span>退出</span>
+              </button>
+
+              <span class="mode-pill">${MODES[state.mode].name}</span>
+
+              <div class="progress-wrap">
+                <div
+                  class="progress-track"
+                  role="progressbar"
+                  aria-valuemin="0"
+                  aria-valuemax="${totalCount}"
+                  aria-valuenow="${answeredCount}"
+                >
+                  <i class="progress-bar" style="width: ${progressPercent}%"></i>
+                </div>
+
+                <span class="progress-text">
+                  已完成 ${answeredCount} / ${totalCount}
+                </span>
+              </div>
+            </div>
+
+            <div class="quiz-layout">
+              <section>
+                <div class="question-list">
+                  ${state.questions.map(renderQuestionCard).join("")}
+                </div>
+
+                ${state.submitted ? "" : `
+                  <div class="submit-area">
+                    <div class="submit-copy">
+                      <strong>${answeredCount} / ${totalCount} 题已作答</strong>
+                      <span>全部作答后提交，系统会按实际题量计算成绩。</span>
+                    </div>
+
+                    <button class="primary-button" type="button" data-action="submit">
+                      提交答案
+                    </button>
+                  </div>
+                `}
+              </section>
+
+              <aside class="quiz-side">
+                ${state.submitted ? renderResults() : ""}
+
+                <div class="side-card">
+                  <div class="side-head">
+                    <span>原文依据</span>
+                    <span>核对答案</span>
+                  </div>
+
+                  <p class="source-text">${escapeHtml(state.sourceText)}</p>
+                </div>
+              </aside>
+            </div>
+          </div>
+        `;
+      }
+
+      function render() {
+        if (state.screen === "home") {
+          renderHome();
+        } else if (state.screen === "start") {
+          renderStart();
+        } else {
+          renderQuiz();
+        }
+
+        window.scrollTo(0, 0);
+      }
+
+      function updateProgressDisplay() {
+        const totalCount = state.questions.length;
+        const answeredCount = countAnswered();
+
+        const progressPercent = totalCount > 0
+          ? Math.round((answeredCount / totalCount) * 100)
+          : 0;
+
+        const progressBar = document.querySelector(".progress-bar");
+        const progressTrack = document.querySelector(".progress-track");
+        const progressText = document.querySelector(".progress-text");
+        const submitCopyStrong = document.querySelector(".submit-copy strong");
+
+        if (progressBar) {
+          progressBar.style.width = progressPercent + "%";
+        }
+
+        if (progressText) {
+          progressText.textContent = `已完成 ${answeredCount} / ${totalCount}`;
+        }
+
+        if (progressTrack) {
+          progressTrack.setAttribute("aria-valuenow", String(answeredCount));
+        }
+
+        if (submitCopyStrong) {
+          submitCopyStrong.textContent = `${answeredCount} / ${totalCount} 题已作答`;
+        }
+      }
+
+      function pickImage() {
+        const input = document.getElementById("image-input");
+        input?.click();
+      }
+
+      async function recognizeImage() {
+        if (state.loadingOcr) {
+          return;
+        }
+
+        if (!state.selectedFile) {
+          showToast("请先选择一张包含文字的图片。", "error");
+          return;
+        }
+
+        const button = document.querySelector('[data-action="recognize"]');
+        const status = document.getElementById("ocr-status");
+        const textarea = document.getElementById("source-text");
+
+        state.loadingOcr = true;
+
+        if (button) {
+          button.disabled = true;
+          button.textContent = "识别中...";
+        }
+
+        if (status) {
+          status.className = "ocr-status";
+          status.textContent = "正在读取图片文字，请稍候...";
+        }
+
+        try {
+          const formData = new FormData();
+          formData.append("image", state.selectedFile, state.selectedFile.name);
+
+          const payload = await fetchJson("/api/ocr", {
+            method: "POST",
+            body: formData
+          });
+
+          const text = extractOcrText(payload);
+
+          if (!text) {
+            throw new Error(
+              "没有识别到文字。请确认图片清晰，或直接在文本框手动输入原文。"
+            );
+          }
+
+          state.sourceText = text;
+
+          if (textarea) {
+            textarea.value = text;
+          }
+
+          if (status) {
+            status.className = "ocr-status success";
+            status.textContent =
+              `识别完成，共提取 ${text.length} 个字符。请校对后再开始答题。`;
+          }
+
+          showToast("图片文字已识别，可以继续校对。", "success");
+        } catch (error) {
+          const message = getErrorMessage(error);
+
+          if (status) {
+            status.className = "ocr-status error";
+            status.textContent = message;
+          }
+
+          showToast(message, "error");
+        } finally {
+          state.loadingOcr = false;
+
+          if (button?.isConnected) {
+            button.disabled = false;
+            button.textContent = "识别图片文字";
+          }
+        }
+      }
+
+      async function generateQuestions() {
+        if (state.loadingQuestions) {
+          return;
+        }
+
+        const textarea = document.getElementById("source-text");
+        const text = String(textarea?.value ?? state.sourceText).trim();
+
+        if (!text) {
+          showToast("请先上传图片并识别文字，或手动输入原文。", "error");
+          textarea?.focus();
+          return;
+        }
+
+        const button = document.querySelector('[data-action="generate"]');
+        const status = document.getElementById("ocr-status");
+
+        state.loadingQuestions = true;
+        state.sourceText = text;
+
+        if (button) {
+          button.disabled = true;
+
+          const label = button.querySelector("span:first-child");
+
+          if (label) {
+            label.textContent = "正在生成题目...";
+          }
+        }
+
+        if (status) {
+          status.className = "ocr-status";
+          status.textContent = "AI 正在根据原文出题，请稍候...";
+        }
+
+        try {
+          const payload = await fetchJson("/api/generate-questions", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              text,
+              type: state.mode
+            })
+          });
+
+          const questions = normalizeQuestions(payload, state.mode);
+
+          if (!questions.length) {
+            throw new Error(
+              payload?.error ||
+              payload?.message ||
+              "后端没有返回可用的题目。"
+            );
+          }
+
+          state.questions = questions;
+          state.answers = Array.from({ length: questions.length }, () => null);
+          state.submitted = false;
+          state.screen = "quiz";
+          render();
+        } catch (error) {
+          const message = getErrorMessage(error);
+
+          if (status) {
+            status.className = "ocr-status error";
+            status.textContent = message;
+          }
+
+          showToast("生成题目失败：" + message, "error");
+        } finally {
+          state.loadingQuestions = false;
+
+          if (button?.isConnected) {
+            button.disabled = false;
+
+            const label = button.querySelector("span:first-child");
+
+            if (label) {
+              label.textContent = "开始答题";
+            }
+          }
+        }
+      }
+
+      function submitAnswers() {
+        const unanswered = state.answers.filter((value) => {
+          return !Number.isInteger(value);
+        }).length;
+
+        if (unanswered > 0) {
+          showToast(
+            `还有 ${unanswered} 道题未作答，请完成后再提交。`,
+            "error"
+          );
+          return;
+        }
+
+        state.submitted = true;
+        renderQuiz();
+
+        window.requestAnimationFrame(() => {
+          document.querySelector(".score-card")?.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+          });
+        });
+      }
+
+      function restartPractice() {
+        state.questions = [];
+        state.answers = [];
+        state.submitted = false;
+        state.screen = "start";
+        render();
+      }
+
+      function findActionElement(target) {
+        return target instanceof Element
+          ? target.closest("[data-action]")
+          : null;
+      }
+
+      app.addEventListener("click", (event) => {
+        const actionElement = findActionElement(event.target);
+
+        if (!actionElement) {
+          return;
+        }
+
+        const action = actionElement.dataset.action;
+
+        if (action === "home") {
+          state.screen = "home";
+          state.submitted = false;
+          render();
+          return;
+        }
+
+        if (action === "select-mode") {
+          const mode = actionElement.dataset.mode;
+
+          if (!mode || !MODES[mode]) {
+            return;
+          }
+
+          if (mode === "match") {
+            showToast("连线题入口已保留，当前版本先使用选择题和选词填空。");
+            return;
+          }
+
+          state.mode = mode;
+          state.screen = "start";
+          state.questions = [];
+          state.answers = [];
+          state.submitted = false;
+          render();
+          return;
+        }
+
+        if (action === "pick-file") {
+          pickImage();
+          return;
+        }
+
+        if (action === "recognize") {
+          recognizeImage();
+          return;
+        }
+
+        if (action === "generate") {
+          generateQuestions();
+          return;
+        }
+
+        if (action === "submit") {
+          submitAnswers();
+          return;
+        }
+
+        if (action === "exit-quiz") {
+          state.screen = "start";
+          state.submitted = false;
+          render();
+          return;
+        }
+
+        if (action === "restart") {
+          restartPractice();
+        }
+      });
+
+      app.addEventListener("change", (event) => {
+        const target = event.target;
+
+        if (target instanceof HTMLInputElement && target.type === "file") {
+          setSelectedFile(target.files?.[0]);
+          return;
+        }
+
+        if (target instanceof HTMLInputElement && target.type === "radio") {
+          const questionIndex = Number(target.dataset.questionIndex);
+          const optionIndex = Number(target.dataset.optionIndex);
+
+          if (
+            Number.isInteger(questionIndex) &&
+            Number.isInteger(optionIndex) &&
+            questionIndex >= 0 &&
+            questionIndex < state.questions.length
+          ) {
+            state.answers[questionIndex] = optionIndex;
+            updateProgressDisplay();
+          }
+        }
+      });
+
+      app.addEventListener("input", (event) => {
+        if (
+          event.target instanceof HTMLTextAreaElement &&
+          event.target.id === "source-text"
+        ) {
+          state.sourceText = event.target.value;
+        }
+      });
+
+      app.addEventListener("dragover", (event) => {
+        const zone = event.target instanceof Element
+          ? event.target.closest(".upload-zone")
+          : null;
+
+        if (!zone) {
+          return;
+        }
+
+        event.preventDefault();
+        zone.classList.add("is-dragging");
+      });
+
+      app.addEventListener("dragleave", (event) => {
+        const zone = event.target instanceof Element
+          ? event.target.closest(".upload-zone")
+          : null;
+
+        zone?.classList.remove("is-dragging");
+      });
+
+      app.addEventListener("drop", (event) => {
+        const zone = event.target instanceof Element
+          ? event.target.closest(".upload-zone")
+          : null;
+
+        if (!zone) {
+          return;
+        }
+
+        event.preventDefault();
+        zone.classList.remove("is-dragging");
+        setSelectedFile(event.dataTransfer?.files?.[0]);
+      });
+
+      window.setSelectedFile = setSelectedFile;
+
+      render();
+    })();
+  </script>
+</body>
+</html>
